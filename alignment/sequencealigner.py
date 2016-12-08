@@ -335,6 +335,7 @@ class LocalSequenceAligner(SequenceAligner):
         m = len(first) + 1
         n = len(second) + 1
         f = numpy.zeros((m, n), int)
+        print(f)
         for i in range(1, m):
             for j in range(1, n):
                 # Match elements.
