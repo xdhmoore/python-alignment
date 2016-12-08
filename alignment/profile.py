@@ -1,6 +1,7 @@
 from six import iteritems
 from six import itervalues
 from builtins import range
+from functools import reduce
 
 try:
     import itertools.izip as zip
@@ -74,9 +75,9 @@ class SoftElement(object):
     def __unicode__(self):
         weights = self.sorted()
         if len(weights) == 1:
-            return unicode(weights[0][0])
+            return str(weights[0][0])
         else:
-            return u'{%s}' % (u','.join(u'%s:%d' % w for w in weights))
+            return '{%s}' % (','.join('%s:%d' % w for w in weights))
 
 
 class Profile(Sequence):
@@ -115,10 +116,10 @@ class Profile(Sequence):
         words = list()
         for word in self.key():
             if word is None:
-                words.append(u'*')
+                words.append('*')
             else:
                 words.append(word)
-        return u' '.join(words)
+        return ' '.join(words)
 
     def minVariationCount(self):
         return max(len(e) for e in self.elements)

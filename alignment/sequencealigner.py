@@ -10,9 +10,7 @@ from alignment.sequence import *
 
 # Scoring ---------------------------------------------------------------------
 
-class Scoring(object):
-    __metaclass__ = ABCMeta
-
+class Scoring(object, metaclass=ABCMeta):
     @abstractmethod
     def __call__(self, firstElement, secondElement):
         return 0
@@ -131,21 +129,19 @@ class SequenceAlignment(object):
         return '%s\n%s' % (' '.join(first), ' '.join(second))
 
     def __unicode__(self):
-        first = [unicode(e) for e in self.first.elements]
-        second = [unicode(e) for e in self.second.elements]
+        first = [str(e) for e in self.first.elements]
+        second = [str(e) for e in self.second.elements]
         for i in range(len(first)):
             n = max(len(first[i]), len(second[i]))
-            format = u'%-' + unicode(n) + u's'
+            format = '%-' + str(n) + 's'
             first[i] = format % first[i]
             second[i] = format % second[i]
-        return u'%s\n%s' % (u' '.join(first), u' '.join(second))
+        return '%s\n%s' % (' '.join(first), ' '.join(second))
 
 
 # Aligner ---------------------------------------------------------------------
 
-class SequenceAligner(object):
-    __metaclass__ = ABCMeta
-
+class SequenceAligner(object, metaclass=ABCMeta):
     def __init__(self, scoring, gapScore):
         self.scoring = scoring
         self.gapScore = gapScore

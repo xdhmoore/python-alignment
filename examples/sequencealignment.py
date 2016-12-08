@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 from alignment.sequence import Sequence
 from alignment.vocabulary import Vocabulary

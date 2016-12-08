@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 
 try:
     import numpypy as numpy
@@ -61,10 +61,10 @@ class BaseSequence(object):
 
     def __unicode__(self):
         if self.id is None:
-            result = u''
+            result = ''
         else:
-            result = u'> %s\n' % self.id
-        result += u' '.join(unicode(e) for e in self.elements)
+            result = '> %s\n' % self.id
+        result += ' '.join(str(e) for e in self.elements)
         return result
 
 
