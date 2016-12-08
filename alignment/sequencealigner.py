@@ -108,6 +108,12 @@ class SequenceAlignment(object):
             self.percentSimilarity(), \
             -self.percentGap()
 
+    def first_offset(self):
+        return self.firstOffset
+
+    def second_offset(self):
+        return self.secondOffset
+
     def __len__(self):
         assert len(self.first) == len(self.second)
         return len(self.first)
@@ -148,6 +154,7 @@ class SequenceAligner(object, metaclass=ABCMeta):
 
     def align(self, first, second, backtrace=False):
         f = self.computeAlignmentMatrix(first, second)
+        print(f)
         score = self.bestScore(f)
         if backtrace:
             alignments = self.backtrace(first, second, f)
@@ -335,9 +342,9 @@ class LocalSequenceAligner(SequenceAligner):
         m = len(first) + 1
         n = len(second) + 1
         f = numpy.zeros((m, n), int)
-        print(f)
         for i in range(1, m):
             for j in range(1, n):
+                #for only 1 alignment?? Could save some time
                 # Match elements.
                 ab = f[i - 1, j - 1] \
                     + self.scoring(first[i - 1], second[j - 1])
@@ -364,13 +371,17 @@ class LocalSequenceAligner(SequenceAligner):
             minScore = self.minScore
         for i in range(m):
             for j in range(n):
+                print("f[i,j] >= minScore ---", "f[", i, ", ", j, "] = ", f[i,j], " >= ", minScore, "::::", f[i,j] >= minScore)
                 if f[i, j] >= minScore:
+                    print("calling backtrace")
                     self.backtraceFrom(first, second, f, i, j,
                                        alignments, alignment)
         return alignments
 
     def backtraceFrom(self, first, second, f, i, j, alignments, alignment):
         if f[i, j] == 0:
+            alignment.firstOffset=i-1
+            alignment.secondOffset=j-2
             alignments.append(alignment.reversed())
         else:
             c = f[i, j]
@@ -381,17 +392,21 @@ class LocalSequenceAligner(SequenceAligner):
             b = second[j - 1]
             if c == p + self.scoring(a, b):
                 alignment.push(a, b, c - p)
+                #print("a:\n", alignment)
                 self.backtraceFrom(first, second, f, i - 1, j - 1,
                                    alignments, alignment)
                 alignment.pop()
             else:
                 if c == y + self.gapScore:
                     alignment.push(alignment.gap, b, c - y)
+                    #print("b:\n", alignment)
                     self.backtraceFrom(first, second, f, i, j - 1,
                                        alignments, alignment)
                     alignment.pop()
                 if c == x + self.gapScore:
                     alignment.push(a, alignment.gap, c - x)
+                    #print("c:\n", alignment)
                     self.backtraceFrom(first, second, f, i - 1, j,
                                        alignments, alignment)
                     alignment.pop()
+            #print("pop:\n", alignment)
