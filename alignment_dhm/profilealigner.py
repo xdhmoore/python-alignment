@@ -1,6 +1,6 @@
 from six import iteritems
-from alignment.profile import *
-from alignment.sequencealigner import *
+from alignment_dhm.profile import *
+from alignment_dhm.sequencealigner import *
 
 
 # Scoring ---------------------------------------------------------------------

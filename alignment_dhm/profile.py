@@ -10,7 +10,7 @@ except ImportError:
 
 import operator
 
-from alignment.sequence import *
+from alignment_dhm.sequence import *
 
 
 # Profile ---------------------------------------------------------------------

@@ -4,12 +4,12 @@
 from distutils.core import setup
 
 setup(
-    name='alignment',
-    version='1.0.9',
+    name='alignment_dhm',
+    version='1.0.10',
     author='Eser Aygün',
     author_email='eser.aygun@gmail.com',
-    packages=['alignment'],
-    url='https://github.com/eseraygun/python-alignment',
+    packages=['alignment_dhm'],
+    url='https://github.com/xdhmoore/python-alignment',
     license='BSD 3-Clause License',
     description='Native Python library for generic sequence alignment.',
     long_description=open('README.rst').read(),

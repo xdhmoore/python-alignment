@@ -5,7 +5,7 @@ except ImportError:
     import numpy
 from abc import ABCMeta, abstractmethod
 
-from alignment.sequence import *
+from alignment_dhm.sequence import *
 
 
 # Scoring ---------------------------------------------------------------------
@@ -152,10 +152,20 @@ class SequenceAligner(object, metaclass=ABCMeta):
         self.gapScore = gapScore
 
     def align(self, first, second, backtrace=False):
+        #print("blah")
         f = self.computeAlignmentMatrix(first, second)
+        #print(f)
+        #print("figs")
         score = self.bestScore(f)
         if backtrace:
-            alignments = self.backtrace(first, second, f)
+            #print("asdf")
+            if self.backtraceIter:
+                #print("as1f")
+                alignments = self.backtraceIter(first, second, f)
+            else:
+                #print("as2f")
+                alignments = self.backtrace(first, second, f)
+                #print("as3f")
             return score, alignments
         else:
             return score
@@ -223,6 +233,8 @@ class GlobalSequenceAligner(SequenceAligner):
 
     def backtraceFrom(self, first, second, f, i, j, alignments, alignment):
         if i == 0 or j == 0:
+            alignment.firstOffset=i
+            alignment.secondOffset=j
             alignments.append(alignment.reversed())
         else:
             m, n = f.shape
@@ -256,6 +268,58 @@ class GlobalSequenceAligner(SequenceAligner):
                     self.backtraceFrom(first, second, f, i - 1, j,
                                        alignments, alignment)
                     alignment.pop()
+
+
+    #TODO only returning 1 alignment currently to make our life easier
+    def backtraceIter(self, first, second, f):
+        m, n = f.shape
+        alignments = list()
+        alignment = self.emptyAlignment(first, second)
+        i = m - 1
+        j = n - 1
+
+        while i != 0 and j != 0 :
+            print ("[i,j]=[", i, ",", j, "]")
+            m, n = f.shape
+            c = f[i, j]
+            p = f[i - 1, j - 1]
+            x = f[i - 1, j]
+            y = f[i, j - 1]
+            a = first[i - 1]
+            b = second[j - 1]
+            if c == p + self.scoring(a, b):
+                print("a")
+                alignment.push(a, b, c - p)
+                i -= 1
+                j -= 1
+                continue
+            else:
+                print("b")
+                if i == m - 1:
+                    print("c")
+                    if c == y:
+                        print("d")
+                        j -= 1
+                        continue
+                elif c == y + self.gapScore:
+                    print("e")
+                    alignment.push(alignment.gap, b, c - y)
+                    j -= 1
+                    continue
+                if j == n - 1:
+                    print("f")
+                    if c == x:
+                        print("g")
+                        i -= 1
+                        continue
+                elif c == x + self.gapScore:
+                    print("h")
+                    alignment.push(a, alignment.gap, c - x)
+                    i -= 1
+                    continue
+
+        return [alignment.reversed()]
+
 
 
 class StrictGlobalSequenceAligner(SequenceAligner):
@@ -299,6 +363,8 @@ class StrictGlobalSequenceAligner(SequenceAligner):
 
     def backtraceFrom(self, first, second, f, i, j, alignments, alignment):
         if i == 0 and j == 0:
+            alignment.firstOffset=i
+            alignment.secondOffset=j
             alignments.append(alignment.reversed())
         else:
             c = f[i, j]
@@ -342,7 +408,6 @@ class LocalSequenceAligner(SequenceAligner):
         f = numpy.zeros((m, n), int)
         for i in range(1, m):
             for j in range(1, n):
-                #for only 1 alignment?? Could save some time
                 # Match elements.
                 ab = f[i - 1, j - 1] \
                     + self.scoring(first[i - 1], second[j - 1])

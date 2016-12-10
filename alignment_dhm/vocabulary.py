@@ -1,5 +1,5 @@
-from alignment.sequence import *
-from alignment.profile import *
+from alignment_dhm.sequence import *
+from alignment_dhm.profile import *
 
 
 # Vocabulary ------------------------------------------------------------------
